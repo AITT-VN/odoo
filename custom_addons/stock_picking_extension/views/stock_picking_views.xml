@@ -1,0 +1,16 @@
+<odoo>
+    <record id="view_picking_form_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <group>
+                    <field name="partner_street" readonly="1"/>
+                    <field name="partner_phone" readonly="1"/>
+                    <field name="partner_mobile" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
