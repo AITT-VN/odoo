@@ -4,7 +4,7 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     partner_street = fields.Char(
-        related='partner_id.street',
+        related='partner_id.contact_address',
         string=_('Address'),
         readonly=True
     )
