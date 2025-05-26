@@ -18,7 +18,7 @@ msgstr ""
 #. module: stock_picking_extension
 #. odoo-python
 #: code:addons/stock_picking_extension/models/stock_picking.py:0
-#: model:ir.model.fields,field_description:stock_picking_extension.field_stock_picking__partner_street
+#: model:ir.model.fields,field_description:stock_picking_extension.field_stock_picking__partner_contact_address
 msgid "Address"
 msgstr ""
 
@@ -34,9 +34,4 @@ msgstr ""
 #: code:addons/stock_picking_extension/models/stock_picking.py:0
 #: model:ir.model.fields,field_description:stock_picking_extension.field_stock_picking__partner_phone
 msgid "Phone"
-msgstr ""
-
-#. module: stock_picking_extension
-#: model:ir.model,name:stock_picking_extension.model_stock_picking
-msgid "Transfer"
 msgstr ""

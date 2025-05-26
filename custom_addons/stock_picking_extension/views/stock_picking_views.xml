@@ -8,7 +8,7 @@
             <!-- Add related fields for partner address and phone after partner_id -->
             <xpath expr="//field[@name='partner_id']" position="after">
                 <group>
-                    <field name="partner_street" readonly="1"/>
+                    <field name="partner_contact_address" readonly="1"/>
                     <field name="partner_phone" readonly="1"/>
                     <field name="partner_mobile" readonly="1"/>
                 </group>
