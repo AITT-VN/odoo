@@ -1,0 +1,13 @@
+{
+    'name': 'ADT Sale Order Customer Contact',
+    'version': '1.0',
+    'summary': 'Show customer phone and mobile in sales order for ADT',
+    'author': 'ADT',
+    'category': 'Sales',
+    'depends': ['sale', 'contacts'],
+    'data': [
+        'views/sale_order_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+}
