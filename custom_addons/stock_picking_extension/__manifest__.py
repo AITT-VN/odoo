@@ -1,6 +1,6 @@
 {
     'name': 'ADT Stock Picking Extension',
-    'version': '1.0',
+    'version': '1.1',
     'summary': 'Custom extension for stock picking for ADT',
     'category': 'Inventory/Inventory',
     'author': 'ADT',
