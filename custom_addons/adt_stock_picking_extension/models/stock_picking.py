@@ -3,7 +3,7 @@ from odoo import models, fields, _
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    partner_street = fields.Char(
+    partner_contact_address = fields.Char(
         related='partner_id.contact_address',
         string=_('Address'),
         readonly=True
