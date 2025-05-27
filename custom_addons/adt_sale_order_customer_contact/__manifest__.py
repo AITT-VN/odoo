@@ -1,6 +1,6 @@
 {
     'name': 'ADT Sale Order Customer Contact',
-    'version': '1.0',
+    'version': '1.2',
     'summary': 'Show customer phone and mobile in sales order for ADT',
     'author': 'ADT',
     'category': 'Sales',
