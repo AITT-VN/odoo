@@ -1,14 +1,15 @@
 from odoo import models, fields
 import io
 from openpyxl import Workbook
-from datetime import datetime
+from datetime import timedelta
 from odoo.http import request
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    x_custom_field = fields.Char(string="Custom Field")
+    PAYMENT_TERMS_IMMEDIATE_CASH = "Thu tiền ngay - Tiền mặt"
+    PAYMENT_TERMS_IMMEDIATE_TRANSFER = "Thu tiền ngay - Chuyển khoản"
 
     def generate_export_excel(self):
         wb = Workbook()
@@ -91,72 +92,120 @@ class SaleOrder(models.Model):
             for line in order.order_line:
                 row = {}
                 row["hinh_thuc_ban_hang"] = "Bán hàng hóa trong nước"
-                row["phuong_thuc_thanh_toan"] = "X"
+
+                payment_terms = self.get_phuong_thuc_thanh_toan(order)
+                row["phuong_thuc_thanh_toan"] = payment_terms
+
                 row["kiem_phieu_xuat_kho"] = "Có"
                 row["lap_kem_hoa_don"] = "Không"
-                row["da_lap_hoa_don"] = "X"
-                row["ngay_hach_toan"] = "X"
-                row["ngay_chung_tu"] = "X"
-                row["so_chung_tu"] = "X"
-                row["so_phieu_xuat"] = "X"
+
+                invoices = order.invoice_ids.filtered(lambda inv: inv.state != "cancel")
+                row["da_lap_hoa_don"] = invoices if invoices else "Chưa lập"
+
+                row["ngay_hach_toan"] = (
+                    order.create_date.strftime("%d/%m/%Y") if order.create_date else ""
+                )
+                row["ngay_chung_tu"] = (
+                    order.create_date.strftime("%d/%m/%Y") if order.create_date else ""
+                )
+                row["so_chung_tu"] = invoices[0].name if invoices else ""
+                row["so_phieu_xuat"] = self.get_so_phieu_xuat(order)
                 row["mau_so_hd"] = ""
                 row["ky_hieu_hd"] = ""
                 row["so_hoa_don"] = ""
                 row["ngay_hoa_don"] = ""
-                row["ma_khach_hang"] = "X"
-                row["ten_khach_hang"] = "X"
-                row["dia_chi"] = "X"
-                row["ma_so_thue"] = "X"
+                row["ma_khach_hang"] = (
+                    order.partner_id.ref if order.partner_id.ref else ""
+                )
+                row["ten_khach_hang"] = (
+                    order.partner_id.name if order.partner_id else ""
+                )
+                row["dia_chi"] = (
+                    order.partner_id.contact_address if order.partner_id else ""
+                )
+                row["ma_so_thue"] = order.partner_id.vat if order.partner_id.vat else ""
                 row["don_vi_giao_dai_ly"] = ""
                 row["nguoi_nop"] = ""
                 row["nop_vao_tk"] = ""
                 row["ten_ngan_hang"] = ""
                 row["dien_giai_ly_do_nop"] = ""
                 row["ly_do_xuat"] = "Xuất kho bán hàng"
-                row["ma_nhan_vien_ban_hang"] = "X"
+
+                salesperson_properties = self.get_salesperson_employee_properties(order)
+                row["ma_nhan_vien_ban_hang"] = (
+                    salesperson_properties.get("employee_id", "")
+                    if salesperson_properties
+                    else ""
+                )
+
                 row["so_chung_tu_kem_theo_phieu_thu"] = ""
                 row["so_chung_tu_kem_theo_phieu_xuat"] = 1
-                row["han_thanh_toan"] = "X"
+
+                if payment_terms in [
+                    self.PAYMENT_TERMS_IMMEDIATE_CASH,
+                    self.PAYMENT_TERMS_IMMEDIATE_TRANSFER,
+                ]:
+                    due_date = order.create_date
+                else:
+                    # Add 7 days to the creation date
+                    due_date = order.create_date + timedelta(days=7)
+                row["han_thanh_toan"] = due_date.strftime("%d/%m/%Y")
+
                 row["loai_tien"] = "VND"
                 row["ty_gia"] = 1
-                row["ma_hang"] = "X"
-                row["thuoc_combo"] = ""
-                row["ten_hang"] = line.product_id.name
-                row["la_dong_ghi_chu"] = "X"
-                row["hang_khuyen_mai"] = "X"
-                row["tk_tien_chi_phi_no"] = "X"
-                row["tk_doanh_thu_co"] = "X"
-                row["dvt"] = "ĐVT"
-                row["so_luong"] = "X"
-                row["don_gia"] = "X"
-                row["thanh_tien"] = "X" # row["so_luong"] * row["don_gia"]
-                row["thanh_tien_quy_doi"] = "X" # row["thanh_tien"] * row["ty_gia"]
-                row["ty_le_ck"] = "X"
-                row["tien_chiet_khau"] = "X" # row["thanh_tien"] * row["ty_le_ck"] / 100
-                row["tien_chiet_khau_quy_doi"] = "X" # row["tien_chiet_khau"] * row["ty_gia"]
-                row["tk_chiet_khau"] = "X"
-                row["gia_tinh_thue_xk"] = ""
-                row["thue_xuat_khau"] = ""
-                row["tien_thue_xuat_khau"] = ""
-                row["tk_thue_xuat_khau"] = ""
-                row["thue_gtgt"] = ""
-                row["thue_suat_khac"] = ""
-                row["tien_thue_gtgt"] = "X"
-                row["tien_thue_gtgt_quy_doi"] = "X" # row["tien_thue_gtgt"] * row["ty_gia"]
-                row["tk_thue_gtgt"] = "X"
-                row["hh_khong_th_tren_to_khai_thue_gtgt"] = ""
-                row["ma_khoan_muc_chi_phi"] = ""
-                row["ma_don_vi"] = ""
-                row["ma_doi_tuong_thcp"] = ""
-                row["ma_cong_trinh"] = ""
-                row["so_don_dat_hang"] = ""
-                row["so_hop_dong_ban"] = ""
-                row["ma_thong_ke"] = ""
-                row["so_khe_uoc_cho_vay"] = ""
-                row["cp_khong_hop_ly"] = ""
-                row["ma_kho"] = "X"
-                row["tk_gia_von"] = "X"
-                row["tk_kho"] = "X"
+
+                if line.product_id:
+                    row["ma_hang"] = line.product_id.default_code if line.product_id else ""
+                    row["thuoc_combo"] = ""
+                    row["ten_hang"] = line.product_id.name
+                    row["la_dong_ghi_chu"] = "Có" if not line.product_id else ""
+                    row["hang_khuyen_mai"] = "Không"
+                    row["tk_tien_chi_phi_no"] = "1311"
+                    row["tk_doanh_thu_co"] = "5111"
+                    row["dvt"] = line.product_uom.name if line.product_uom else ""
+                    row["so_luong"] = line.product_uom_qty
+                    row["don_gia"] = line.price_unit
+                    row["thanh_tien"] = row["so_luong"] * row["don_gia"]
+                    row["thanh_tien_quy_doi"] = row["thanh_tien"] * row["ty_gia"]
+                    row["ty_le_ck"] = ""
+                    row["tien_chiet_khau"] = (
+                        row["thanh_tien"] * float(row["ty_le_ck"]) / 100
+                        if row["ty_le_ck"]
+                        else 0
+                    )
+                    row["tien_chiet_khau_quy_doi"] = row["tien_chiet_khau"] * row["ty_gia"]
+                    row["tk_chiet_khau"] = "5111"
+                    row["gia_tinh_thue_xk"] = ""
+                    row["thue_xuat_khau"] = ""
+                    row["tien_thue_xuat_khau"] = ""
+                    row["tk_thue_xuat_khau"] = ""
+
+                    tax = line.tax_id[0] if line.tax_id else None
+                    row["thue_gtgt"] = int(tax.amount) if tax else ""
+
+                    row["thue_suat_khac"] = ""
+
+                    row["tien_thue_gtgt"] = (
+                        (row["thanh_tien"] - row["tien_chiet_khau"])
+                        * float(row["thue_gtgt"])
+                        / 100
+                    )
+
+                    row["tien_thue_gtgt_quy_doi"] = row["tien_thue_gtgt"] * row["ty_gia"]
+                    row["tk_thue_gtgt"] = "33311"
+                    row["hh_khong_th_tren_to_khai_thue_gtgt"] = ""
+                    row["ma_khoan_muc_chi_phi"] = ""
+                    row["ma_don_vi"] = ""
+                    row["ma_doi_tuong_thcp"] = ""
+                    row["ma_cong_trinh"] = ""
+                    row["so_don_dat_hang"] = ""
+                    row["so_hop_dong_ban"] = ""
+                    row["ma_thong_ke"] = ""
+                    row["so_khe_uoc_cho_vay"] = ""
+                    row["cp_khong_hop_ly"] = ""
+                    row["ma_kho"] = "001"
+                    row["tk_gia_von"] = "632"
+                    row["tk_kho"] = "152"
 
                 row_values = [row.get(key, "") for key in headers.keys()]
                 ws.append(row_values)
@@ -177,3 +226,65 @@ class SaleOrder(models.Model):
             "url": url,
             "target": "new",
         }
+
+    def get_phuong_thuc_thanh_toan(self, order):
+        """
+        This method checks the payment term for the order.
+        If it's not 'Thu tiền ngay - Tiền mặt' or 'Thu tiền ngay - Chuyển khoản',
+        it returns 'Chưa thu tiền'.
+        """
+        if order.payment_term_id:
+            payment_terms = order.payment_term_id.with_context(lang="vi_VN").name
+            if payment_terms not in [
+                self.PAYMENT_TERMS_IMMEDIATE_CASH,
+                self.PAYMENT_TERMS_IMMEDIATE_TRANSFER,
+            ]:
+                return "Chưa thu tiền"
+            else:
+                return payment_terms
+
+        return "Chưa thu tiền"
+
+    def get_so_phieu_xuat(self, order):
+        """
+        This method returns the 'Mã của đơn giao hàng đầu tiên' (delivery order reference)
+        for the first non-cancelled delivery order with prefix 'WH/PICK/'.
+        """
+        picking = order.picking_ids.filtered(
+            lambda p: p.state != "cancel" and p.name.startswith("WH/PICK/")
+        )
+
+        if picking:
+            picking_name = picking[0].name
+            # Extract numeric part after 'WH/PICK/'
+            return picking_name.split("WH/PICK/")[1]
+
+        return ""
+
+    def get_salesperson_employee_properties(self, order):
+        """
+        This method returns the employee properties of the salesperson (user) associated with the sale order.
+        """
+        salesperson = order.user_id
+        employee = (
+            salesperson.employee_id
+            if hasattr(salesperson, "employee_id") and salesperson.employee_id
+            else None
+        )
+
+        if employee:
+            return {
+                "name": employee.name,
+                "job_title": employee.job_title,
+                "department": (
+                    employee.department_id.name if employee.department_id else ""
+                ),
+                "work_phone": employee.work_phone,
+                "work_email": employee.work_email,
+                "employee_id": (
+                    list(employee.employee_properties.values())[0]
+                    if employee.employee_properties
+                    else ""
+                ),
+            }
+        return {}
