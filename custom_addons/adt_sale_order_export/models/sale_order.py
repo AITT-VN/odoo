@@ -186,19 +186,19 @@ class SaleOrder(models.Model):
                     row["tk_thue_xuat_khau"] = ""
 
                     tax = line.tax_id[0] if line.tax_id else None
-                    row["phan_tram_thue_gtgt"] = int(tax.amount) if tax else ""
+                    if tax:
+                        row["phan_tram_thue_gtgt"] = int(tax.amount)
+                        row["tien_thue_gtgt"] = (
+                            (row["thanh_tien"] - row["tien_chiet_khau"])
+                            * float(row["phan_tram_thue_gtgt"])
+                            / 100
+                        )
+
+                        row["tien_thue_gtgt_quy_doi"] = (
+                            row["tien_thue_gtgt"] * row["ty_gia"]
+                        )
 
                     row["phan_tram_thue_suat_khac"] = ""
-
-                    row["tien_thue_gtgt"] = (
-                        (row["thanh_tien"] - row["tien_chiet_khau"])
-                        * float(row["phan_tram_thue_gtgt"])
-                        / 100
-                    )
-
-                    row["tien_thue_gtgt_quy_doi"] = (
-                        row["tien_thue_gtgt"] * row["ty_gia"]
-                    )
                     row["tk_thue_gtgt"] = "33311"
                     row["hh_khong_th_tren_to_khai_thue_gtgt"] = ""
                     row["ma_khoan_muc_chi_phi"] = ""
