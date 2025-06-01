@@ -177,14 +177,14 @@ class SaleOrder(models.Model):
                     row["tien_chiet_khau_quy_doi"] = row["tien_chiet_khau"] * row["ty_gia"]
                     row["tk_chiet_khau"] = "5111"
                     row["gia_tinh_thue_xk"] = ""
-                    row["thue_xuat_khau"] = ""
+                    row["phan_tram_thue_xuat_khau"] = ""
                     row["tien_thue_xuat_khau"] = ""
                     row["tk_thue_xuat_khau"] = ""
 
                     tax = line.tax_id[0] if line.tax_id else None
-                    row["thue_gtgt"] = int(tax.amount) if tax else ""
+                    row["phan_tram_thue_gtgt"] = int(tax.amount) if tax else ""
 
-                    row["thue_suat_khac"] = ""
+                    row["phan_tram_thue_suat_khac"] = ""
 
                     row["tien_thue_gtgt"] = (
                         (row["thanh_tien"] - row["tien_chiet_khau"])
