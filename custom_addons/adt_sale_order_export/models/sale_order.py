@@ -157,7 +157,9 @@ class SaleOrder(models.Model):
                 if not line.product_id:
                     row["la_dong_ghi_chu"] = "Có"
                 else:
-                    row["ma_hang"] = line.product_id.default_code if line.product_id else ""
+                    row["ma_hang"] = (
+                        line.product_id.default_code if line.product_id else ""
+                    )
                     row["thuoc_combo"] = ""
                     row["ten_hang"] = line.product_id.name
                     row["hang_khuyen_mai"] = "Không"
@@ -174,7 +176,9 @@ class SaleOrder(models.Model):
                         if row["ty_le_ck"]
                         else 0
                     )
-                    row["tien_chiet_khau_quy_doi"] = row["tien_chiet_khau"] * row["ty_gia"]
+                    row["tien_chiet_khau_quy_doi"] = (
+                        row["tien_chiet_khau"] * row["ty_gia"]
+                    )
                     row["tk_chiet_khau"] = "5111"
                     row["gia_tinh_thue_xk"] = ""
                     row["phan_tram_thue_xuat_khau"] = ""
@@ -188,11 +192,13 @@ class SaleOrder(models.Model):
 
                     row["tien_thue_gtgt"] = (
                         (row["thanh_tien"] - row["tien_chiet_khau"])
-                        * float(row["thue_gtgt"])
+                        * float(row["phan_tram_thue_gtgt"])
                         / 100
                     )
 
-                    row["tien_thue_gtgt_quy_doi"] = row["tien_thue_gtgt"] * row["ty_gia"]
+                    row["tien_thue_gtgt_quy_doi"] = (
+                        row["tien_thue_gtgt"] * row["ty_gia"]
+                    )
                     row["tk_thue_gtgt"] = "33311"
                     row["hh_khong_th_tren_to_khai_thue_gtgt"] = ""
                     row["ma_khoan_muc_chi_phi"] = ""
