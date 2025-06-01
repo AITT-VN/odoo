@@ -100,7 +100,7 @@ class SaleOrder(models.Model):
                 row["lap_kem_hoa_don"] = "Không"
 
                 invoices = order.invoice_ids.filtered(lambda inv: inv.state != "cancel")
-                row["da_lap_hoa_don"] = invoices if invoices else "Chưa lập"
+                row["da_lap_hoa_don"] = "Đã lập" if invoices else "Chưa lập"
 
                 row["ngay_hach_toan"] = (
                     order.create_date.strftime("%d/%m/%Y") if order.create_date else ""
