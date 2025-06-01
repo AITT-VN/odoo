@@ -154,11 +154,12 @@ class SaleOrder(models.Model):
                 row["loai_tien"] = "VND"
                 row["ty_gia"] = 1
 
-                if line.product_id:
+                if not line.product_id:
+                    row["la_dong_ghi_chu"] = "Có"
+                else:
                     row["ma_hang"] = line.product_id.default_code if line.product_id else ""
                     row["thuoc_combo"] = ""
                     row["ten_hang"] = line.product_id.name
-                    row["la_dong_ghi_chu"] = "Có" if not line.product_id else ""
                     row["hang_khuyen_mai"] = "Không"
                     row["tk_tien_chi_phi_no"] = "1311"
                     row["tk_doanh_thu_co"] = "5111"
