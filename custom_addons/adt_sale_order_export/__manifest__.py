@@ -1,7 +1,7 @@
 {
-    'name': 'ADT Sale Order Export',
-    'version': '1.1',
-    'summary': 'Custom Sales Orders export for ADT',
+    'name': 'ADT Sale Order Export for Misa',
+    'version': '1.2',
+    'summary': 'Custom Sales Orders export for Misa',
     'category': 'Sales',
     'author': 'ADT',
     'depends': ['sale'],
@@ -10,4 +10,5 @@
     ],
     'installable': True,
     'application': False,
+    'auto_install': False,
 }

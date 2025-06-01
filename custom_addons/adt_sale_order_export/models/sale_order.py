@@ -99,7 +99,7 @@ class SaleOrder(models.Model):
                 row["kiem_phieu_xuat_kho"] = "Có"
                 row["lap_kem_hoa_don"] = "Không"
 
-                invoices = order.invoice_ids.filtered(lambda inv: inv.state != "cancel")
+                invoices = order.invoice_ids.filtered(lambda inv: inv.state not in ["cancel", "draft"])
                 row["da_lap_hoa_don"] = "Đã lập" if invoices else "Chưa lập"
 
                 row["ngay_hach_toan"] = (
@@ -261,12 +261,7 @@ class SaleOrder(models.Model):
             lambda p: p.state != "cancel" and p.name.startswith("WH/PICK/")
         )
 
-        if picking:
-            picking_name = picking[0].name
-            # Extract numeric part after 'WH/PICK/'
-            return picking_name.split("WH/PICK/")[1]
-
-        return ""
+        return picking[0].name if picking else ""
 
     def get_salesperson_employee_properties(self, order):
         """
