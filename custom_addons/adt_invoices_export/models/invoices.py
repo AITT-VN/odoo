@@ -42,7 +42,9 @@ class AccountInvoice(models.Model):
             row["ngay_hach_toan"] = invoice.invoice_date.strftime("%d/%m/%Y")
             row["ngay_chung_tu"] = invoice.invoice_date.strftime("%d/%m/%Y")
             row["so_chung_tu"] = invoice.name
-            row["ma_doi_tuong"] = invoice.partner_id.ref
+            row["ma_doi_tuong"] = (
+                invoice.partner_id.ref if invoice.partner_id.ref else ""
+            )
             row["ten_doi_tuong"] = invoice.partner_id.name
 
             partner_bank = invoice.partner_bank_id
@@ -60,7 +62,9 @@ class AccountInvoice(models.Model):
             row["tk_co"] = 1311
             row["so_tien"] = invoice.amount_total
             row["quy_doi"] = row["so_tien"] * row["ty_gia"]
-            row["ma_doi_tuong_hach_toan"] = invoice.partner_id.ref
+            row["ma_doi_tuong_hach_toan"] = (
+                invoice.partner_id.ref if invoice.partner_id.ref else ""
+            )
 
             row_values = [row.get(key, "") for key in headers.keys()]
             ws.append(row_values)
