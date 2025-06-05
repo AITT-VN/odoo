@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models
 import io
 from openpyxl import Workbook
 from datetime import timedelta
