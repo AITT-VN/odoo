@@ -1,7 +1,7 @@
 {
-    'name': 'ADT Sale Order Customer Contact',
+    'name': 'ADT Sales Orders Customization',
     'version': '1.3',
-    'summary': 'Show customer phone and mobile in sales order for ADT',
+    'summary': 'Thêm thông tin Số điện thoại trên trang Đơn bán hàng',
     'author': 'ADT',
     'category': 'Sales',
     'depends': ['sale', 'contacts'],

@@ -1,7 +1,7 @@
 {
-    'name': 'ADT Stock Picking Extension',
+    'name': 'ADT Inventory Pick Customization',
     'version': '1.1',
-    'summary': 'Custom extension for stock picking for ADT',
+    'summary': 'Chỉnh sửa giao diện trang Xuất hàng để đóng gói',
     'category': 'Inventory',
     'author': 'ADT',
     'depends': ['stock'],

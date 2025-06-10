@@ -1,7 +1,7 @@
 {
-    "name": "ADT Auto Generate MISA Reference",
+    "name": "ADT Contacts MISA Reference Generation",
     "version": "1.1",
-    "summary": "Automatically set a unique MISA reference on new Contacts",
+    "summary": "Tự thộng tạo Mã khách hàng để nhập vào Misa",
     "author": "ADT",
     "category": "Contacts",
     "depends": ["base"],

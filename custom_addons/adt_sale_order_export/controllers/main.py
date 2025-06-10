@@ -15,7 +15,7 @@ class SaleOrderExportController(http.Controller):
 
         file_content = orders.generate_export_excel()
 
-        filename = f"Don Ban Hang_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        filename = f"Phieu Ban Hang_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
         headers = [
             ('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
             ('Content-Disposition', f'attachment; filename="{filename}"'),

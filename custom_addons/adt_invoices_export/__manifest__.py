@@ -1,7 +1,7 @@
 {
-    'name': 'ADT Invoices Export for Misa',
+    'name': 'ADT Invoices Misa Export',
     'version': '1.0',
-    'summary': 'Custom Invoices export for Misa',
+    'summary': 'Xuất Hóa đơn bán hàng để nhập vào Misa',
     'category': 'Sales',
     'author': 'ADT',
     'depends': ['account'],

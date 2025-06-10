@@ -1,7 +1,7 @@
 {
-    'name': 'ADT Sale Order Export for Misa',
+    'name': 'ADT Sales Orders Misa Export',
     'version': '1.2',
-    'summary': 'Custom Sales Orders export for Misa',
+    'summary': 'Xuất Phiếu bán hàng để nhập vào Misa',
     'category': 'Sales',
     'author': 'ADT',
     'depends': ['sale'],
