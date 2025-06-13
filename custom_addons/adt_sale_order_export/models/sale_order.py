@@ -284,7 +284,7 @@ class SaleOrder(models.Model):
                 "work_phone": employee.work_phone,
                 "work_email": employee.work_email,
                 "employee_id": (
-                    list(employee.employee_properties.values())[0]
+                    next(iter(employee.employee_properties.values())) or ""
                     if employee.employee_properties
                     else ""
                 ),

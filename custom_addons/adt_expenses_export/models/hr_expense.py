@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models
 import io
 from openpyxl import Workbook
 from odoo.http import request
@@ -14,6 +14,7 @@ class ExpenseExport(models.Model):
         ws.title = "Expenses"
 
         headers = {
+            "trang_thai": "Trạng thái",
             "phuong_thuc_thanh_toan": "Phương thức thanh toán",
             "nhan_kem_hoa_doen": "Nhận kèm hóa đơn",
             "la_cp_mua_hang": "Là CP mua hàng",
@@ -74,8 +75,18 @@ class ExpenseExport(models.Model):
 
         ws.append(list(headers.values()))
 
+        state_labels = {
+            "draft": "Chờ báo cáo",
+            "reported": "Để Trình",
+            "submitted": "Để Trình",
+            "approved": "Đã Phê Duyệt",
+            "done": "Hoàn tất",
+            "refused": "Bị từ chối",
+        }
+
         for expense in self:
             row = {}
+            row["trang_thai"] = state_labels.get(expense.state)
             row["phuong_thuc_thanh_toan"] = ""
             row["nhan_kem_hoa_doen"] = ""
             row["la_cp_mua_hang"] = ""
@@ -94,7 +105,7 @@ class ExpenseExport(models.Model):
             row["so_tai_khoan_nhan"] = ""
             row["ten_ngan_hang_nhan"] = ""
             row["ma_nhan_vien_mua_hang"] = (
-                list(expense.employee_id.employee_properties.values())[0]
+                next(iter(expense.employee_id.employee_properties.values())) or ""
                 if expense.employee_id.employee_properties
                 else ""
             )
@@ -126,7 +137,9 @@ class ExpenseExport(models.Model):
             row["so_khe_uoc_di_vay"] = ""
             row["so_khe_uoc_cho_vay"] = ""
             row["cp_khong_hop_ly"] = "Không"
-            row["phan_tram_thue_gtgt"] = expense.tax_ids[0].amount
+            row["phan_tram_thue_gtgt"] = (
+                expense.tax_ids[0].amount if expense.tax_ids else 0
+            )
             row["phan_tram_thue_suat_khac"] = ""
             row["tien_thue_gtgt"] = (
                 (row["thanh_tien"] - row["tien_chiet_khau"])
