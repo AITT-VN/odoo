@@ -6,7 +6,7 @@
     'category': 'Accounting',
     'depends': ['hr_expense'],
     'data': [
-         'data/auto_reference_sequence.xml',
+        'data/auto_reference_sequence.xml',
         'views/expenses_reference_views.xml',
     ],
     'installable': True,
