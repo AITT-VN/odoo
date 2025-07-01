@@ -9,7 +9,7 @@
       <field name="arch" type="xml">
         <xpath expr="//div[hasclass('oe_title')]/h1" position="before">
           <h1>
-            <field name="expense_ref" readonly="1" />
+            <field name="reference" readonly="1" />
           </h1>
         </xpath>
       </field>
@@ -21,7 +21,7 @@
       <field name="inherit_id" ref="hr_expense.view_my_expenses_tree" />
       <field name="arch" type="xml">
         <xpath expr="//list/field[1]" position="before">
-          <field name="expense_ref" string="Number" />
+          <field name="reference" string="Number" />
         </xpath>
       </field>
     </record>
