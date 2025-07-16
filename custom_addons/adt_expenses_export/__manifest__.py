@@ -1,6 +1,6 @@
 {
     "name": "ADT Expenses Misa Export",
-    "version": "1.0",
+    "version": "18.0.1.0.0",
     "summary": "Xuất Chi Phí để nhập vào Misa",
     "category": "Expenses",
     "author": "ADT",
@@ -11,4 +11,5 @@
     "application": True,
     "installable": True,
     "auto_install": False,
+    "license": "LGPL-3",
 }

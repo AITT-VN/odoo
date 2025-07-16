@@ -99,7 +99,9 @@ class SaleOrder(models.Model):
                 row["kiem_phieu_xuat_kho"] = "Có"
                 row["lap_kem_hoa_don"] = "Không"
 
-                invoices = order.invoice_ids.filtered(lambda inv: inv.state not in ["cancel", "draft"])
+                invoices = order.invoice_ids.filtered(
+                    lambda inv: inv.state not in ["cancel", "draft"]
+                )
                 row["da_lap_hoa_don"] = "Đã lập" if invoices else "Chưa lập"
 
                 row["ngay_hach_toan"] = (

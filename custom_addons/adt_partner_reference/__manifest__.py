@@ -1,6 +1,6 @@
 {
     "name": "ADT Contacts MISA Reference Generation",
-    "version": "1.1",
+    "version": "18.0.1.0.0",
     "summary": "Tự động tạo Mã khách hàng để nhập vào Misa",
     "author": "ADT",
     "category": "Contacts",
@@ -12,4 +12,5 @@
     "installable": True,
     "application": False,
     "auto_install": False,
+    "license": "LGPL-3",
 }
