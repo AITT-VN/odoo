@@ -3,17 +3,18 @@
 # 	* survey
 # 
 # Translators:
-# Wil Odoo, 2024
 # allanot nicolas <n.allanot@free.fr>, 2024
 # Manon Rondou, 2025
+# Wil Odoo, 2025
+# Jonathan Quique <jqu@odoo.com>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:39+0000\n"
+"POT-Creation-Date: 2025-04-07 20:36+0000\n"
 "PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Manon Rondou, 2025\n"
+"Last-Translator: Jonathan Quique <jqu@odoo.com>, 2025\n"
 "Language-Team: French (https://app.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -314,7 +315,7 @@ msgstr ""
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "        Cher <t t-out=\"object.partner_id.name or 'participant'\">participant</t><br/><br/>\n"
 "        <t t-if=\"object.survey_id.certification\">\n"
-"            Vous avez été invité(e) à passer une nouvelle cetification.\n"
+"            Vous avez été invité(e) à passer une nouvelle certification.\n"
 "        </t>\n"
 "        <t t-else=\"\">\n"
 "            Nous menons un sondage et votre réponse serait appréciée.\n"
@@ -2179,6 +2180,11 @@ msgstr "Pamplemousses"
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
 msgid "Group By"
 msgstr "Regrouper par"
+
+#. module: survey
+#: model:ir.model,name:survey.model_ir_http
+msgid "HTTP Routing"
+msgstr "Routage HTTP"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__existing_mode

@@ -5,19 +5,19 @@
 # Translators:
 # zakariya moradi, 2025
 # Tiffany Chang, 2025
-# Hanna Kheradroosta, 2025
 # Mostafa Barmshory <mostafa.barmshory@gmail.com>, 2025
 # rahim agh <rahim.aghareb@gmail.com>, 2025
 # Hamed Mohammadi <hamed@dehongi.com>, 2025
 # Naser mars, 2025
+# Hanna Kheradroosta, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-19 20:36+0000\n"
+"POT-Creation-Date: 2025-07-11 18:38+0000\n"
 "PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Naser mars, 2025\n"
+"Last-Translator: Hanna Kheradroosta, 2025\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -55,9 +55,8 @@ msgid ""
 "The quantity done for the product %(product)s doesn't respect the rounding precision defined on the unit of measure %(unit)s.\n"
 "Please change the quantity done or the rounding precision of your unit of measure."
 msgstr ""
-"مقدار انجام شده برای محصول %(product)s با دقت گردی که بر روی واحد "
-"اندازه‌گیری %(unit)s تعریف شده، مطابقت ندارد. لطفاً مقدار انجام‌شده یا دقت "
-"گردی واحد اندازه‌گیری خود را تغییر دهید."
+"\n"
+"مقدار انجام شده برای محصول %(product)s با دقت گردی که بر روی واحد اندازه‌گیری %(unit)s تعریف شده، مطابقت ندارد. لطفاً مقدار انجام‌شده یا دقت گردی واحد اندازه‌گیری خود را تغییر دهید."
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_picking__state
@@ -227,7 +226,7 @@ msgstr "[بازگشت] %s"
 #. odoo-python
 #: code:addons/stock/wizard/stock_replenishment_info.py:0
 msgid "%s days"
-msgstr ""
+msgstr "%s روز"
 
 #. module: stock
 #. odoo-python
@@ -632,18 +631,18 @@ msgstr "<span class=\"o_stat_text\">حداقل:</span>"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_form
 msgid "<span class=\"o_stat_text\">Moves</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">انتقال ها</span>"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_form
 msgid "<span class=\"o_stat_text\">Next Transfer</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">انتقال بعدی</span>"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.product_form_view_procurement_button
 #: model_terms:ir.ui.view,arch_db:stock.product_template_form_view_procurement_button
 msgid "<span class=\"o_stat_text\">On Hand</span>"
-msgstr "موجود"
+msgstr "<span class=\"o_stat_text\">موجود</span>"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_form
@@ -739,7 +738,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock.report_delivery_document
 #: model_terms:ir.ui.view,arch_db:stock.report_picking
 msgid "<strong>Customer Address</strong>"
-msgstr ""
+msgstr "<strong>آدرس مشتری</strong>"
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.report_delivery_document
+msgid "<strong>Delivered</strong>"
+msgstr "<strong>تحویل شده</strong>"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_picking
@@ -781,6 +785,11 @@ msgstr "<strong>حداقل تعداد:</strong>"
 #: model_terms:ir.ui.view,arch_db:stock.report_picking
 msgid "<strong>Order</strong>"
 msgstr ""
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.report_delivery_document
+msgid "<strong>Ordered</strong>"
+msgstr "<strong>سفارش داده شده</strong>"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_package_barcode
@@ -832,7 +841,7 @@ msgstr "<strong>امضا</strong>"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_picking
 msgid "<strong>Status</strong>"
-msgstr ""
+msgstr "<strong>وضعیت</strong>"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.message_head
@@ -891,7 +900,7 @@ msgstr "برای این محصول در این مکان یک قانون تجدی
 #: model:ir.model.fields,help:stock.field_product_template__is_storable
 #: model:ir.model.fields,help:stock.field_stock_move__is_storable
 msgid "A storable product is a product for which you manage stock."
-msgstr ""
+msgstr "محصول قابل ذخیره سازی محصولی است که شما سهام آن را مدیریت می کنید."
 
 #. module: stock
 #: model:res.groups,name:stock.group_warning_stock
@@ -1432,7 +1441,7 @@ msgstr "مقدار در دسترس"
 #: code:addons/stock/models/product.py:0
 msgid ""
 "Available quantity should be set to zero before changing inventory tracking"
-msgstr ""
+msgstr "مقدار موجود باید قبل از تغییر ردیابی موجودی روی صفر تنظیم شود"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking__backorder_id
@@ -1507,7 +1516,7 @@ msgstr "بارکد معتبر EAN است"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_stock_picking_batch
 msgid "Batch, Wave & Cluster Transfers"
-msgstr ""
+msgstr "انتقال دسته ای، موجی و خوشه ای"
 
 #. module: stock
 #. odoo-python
@@ -1591,9 +1600,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock/models/stock_warehouse.py:0
 msgid "COPY"
-msgstr ""
-"I'm sorry, it looks like the text you intended to provide is missing. Could "
-"you please provide the specific text you would like translated into Persian?"
+msgstr "COPY"
 
 #. module: stock
 #: model:product.template,name:stock.product_cable_management_box_product_template
@@ -1644,13 +1651,13 @@ msgstr "لغو شد"
 #. odoo-python
 #: code:addons/stock/models/stock_quant.py:0
 msgid "Cannot move an empty package"
-msgstr ""
+msgstr "نمی توان یک بسته خالی را جابجا کرد"
 
 #. module: stock
 #. odoo-python
 #: code:addons/stock/models/stock_quant.py:0
 msgid "Cannot remove the location of a non empty package"
-msgstr ""
+msgstr "نمی توان مکان یک بسته غیر خالی را حذف کرد"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_storage_category__capacity_ids
@@ -1893,6 +1900,13 @@ msgstr "محاسبه هزینه حمل و نقل و ارسال با DHL"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
+msgid ""
+"Compute shipping costs and ship with DHL<br/>\n"
+"                                    <strong>(please go to Home&gt;Apps to install)</strong>"
+msgstr ""
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Compute shipping costs and ship with Easypost"
 msgstr "محاسبه هزینه حمل و نقل و ارسال با Easypost"
 
@@ -1900,6 +1914,13 @@ msgstr "محاسبه هزینه حمل و نقل و ارسال با Easypost"
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Compute shipping costs and ship with FedEx"
 msgstr "محاسبه هزینه حمل و نقل و ارسال با FedEx"
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
+msgid ""
+"Compute shipping costs and ship with FedEx<br/>\n"
+"                                    <strong>(please go to Home&gt;Apps to install)</strong>"
+msgstr ""
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
@@ -1923,8 +1944,22 @@ msgstr "محاسبه هزینه حمل و نقل و ارسال با UPS"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
+msgid ""
+"Compute shipping costs and ship with UPS<br/>\n"
+"                                    <strong>(please go to Home&gt;Apps to install)</strong>"
+msgstr ""
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Compute shipping costs and ship with USPS"
 msgstr "محاسبه هزینه حمل و نقل و ارسال با USPS"
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
+msgid ""
+"Compute shipping costs and ship with USPS<br/>\n"
+"                                    <strong>(please go to Home&gt;Apps to install)</strong>"
+msgstr ""
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
@@ -2443,6 +2478,11 @@ msgid "DEMO_UOM"
 msgstr "دمو_واحدی_اندازه‌گیری"
 
 #. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
+msgid "DHL Connector"
+msgstr ""
+
+#. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_dhl
 msgid "DHL Express Connector"
 msgstr "کانکتور DHL Express"
@@ -2770,7 +2810,7 @@ msgstr "نوع تحویل"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.search_customer_lot_filter
 msgid "Delivery date"
-msgstr ""
+msgstr "تاریخ تحویل"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_product_product__sale_delay
@@ -3116,6 +3156,7 @@ msgid "Do you confirm you want to scrap"
 msgstr "آیا تأیید می‌کنید که می‌خواهید اسقاط کنید؟"
 
 #. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_type_form
 msgid "Documentation"
 msgstr "مستندات"
@@ -3348,6 +3389,7 @@ msgstr "فوریه"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_fedex
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "FedEx Connector"
 msgstr "درگاه FedEx"
 
@@ -3365,7 +3407,7 @@ msgstr "فیلترها"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_move__location_final_id
 msgid "Final Location"
-msgstr ""
+msgstr "آخرین مکان"
 
 #. module: stock
 #: model:product.removal,name:stock.removal_fifo
@@ -5452,7 +5494,7 @@ msgstr "نام"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_package_barcode_small
 msgid "Name Demo"
-msgstr "<input type=\"text\" name=\"name_demo\" value=\"نام آزمایشی\" />"
+msgstr "نسخه نمایشی نام"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_product_product__nbr_moves_in
@@ -5830,7 +5872,7 @@ msgstr "مقدار در دست"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_inventory
 msgid "On hand Quantity"
-msgstr ""
+msgstr "مقدار در دست"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_stock_quant__available_quantity
@@ -5838,7 +5880,7 @@ msgid ""
 "On hand quantity which hasn't been reserved on a transfer, in the default "
 "unit of measure of the product"
 msgstr ""
-"مقدار موجودی که در انتقال رزرو نشده است، در واحد اندازه گیری پیش فرض محصول"
+"مقدار موجودی که در انتقال رزرو نشده است، در واحد اندازه گیری پیش‌فرض محصول"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.product_template_kanban_stock_view
@@ -6846,7 +6888,7 @@ msgstr "گونه های محصول"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_package_barcode
 msgid "Product barcode"
-msgstr ""
+msgstr "بارکد محصول"
 
 #. module: stock
 #. odoo-python
@@ -7269,7 +7311,7 @@ msgstr "تعداد:"
 #: model:ir.model.fields,field_description:stock.field_stock_track_confirmation__quant_ids
 #: model_terms:ir.ui.view,arch_db:stock.quant_search_view
 msgid "Quants"
-msgstr "کوانت‌ها"
+msgstr "مقادیر"
 
 #. module: stock
 #. odoo-python
@@ -9780,7 +9822,7 @@ msgstr "گزارش رهگیری"
 #: model:ir.model.fields,field_description:stock.field_product_template__is_storable
 #: model:ir.model.fields,field_description:stock.field_stock_move__is_storable
 msgid "Track Inventory"
-msgstr ""
+msgstr "ردیابی موجودی"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_res_config_settings__module_product_expiry
@@ -9965,11 +10007,13 @@ msgstr "نوع فعالیت استثنایی برای رکورد."
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_ups
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "UPS Connector"
 msgstr "درگاه UPS"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_usps
+#: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "USPS Connector"
 msgstr "درگاه USPS"
 

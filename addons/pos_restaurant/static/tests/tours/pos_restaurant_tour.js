@@ -2,6 +2,7 @@
 
 import * as BillScreen from "@pos_restaurant/../tests/tours/utils/bill_screen_util";
 import * as PaymentScreen from "@point_of_sale/../tests/tours/utils/payment_screen_util";
+import * as combo from "@point_of_sale/../tests/tours/utils/combo_popup_util";
 import * as Dialog from "@point_of_sale/../tests/tours/utils/dialog_util";
 import * as ReceiptScreen from "@point_of_sale/../tests/tours/utils/receipt_screen_util";
 import * as ChromePos from "@point_of_sale/../tests/tours/utils/chrome_util";
@@ -12,10 +13,9 @@ import * as ProductScreenPos from "@point_of_sale/../tests/tours/utils/product_s
 import * as ProductScreenResto from "@pos_restaurant/../tests/tours/utils/product_screen_util";
 import * as Order from "@point_of_sale/../tests/tours/utils/generic_components/order_widget_util";
 import * as TicketScreen from "@point_of_sale/../tests/tours/utils/ticket_screen_util";
-import { inLeftSide, negateStep } from "@point_of_sale/../tests/tours/utils/common";
+import { inLeftSide, negateStep, waitForLoading } from "@point_of_sale/../tests/tours/utils/common";
 import { registry } from "@web/core/registry";
 import * as Numpad from "@point_of_sale/../tests/tours/utils/numpad_util";
-import * as combo from "@point_of_sale/../tests/tours/utils/combo_popup_util";
 import { delay } from "@odoo/hoot-dom";
 
 const ProductScreen = { ...ProductScreenPos, ...ProductScreenResto };
@@ -240,9 +240,19 @@ registry.category("web_tour.tours").add("SaveLastPreparationChangesTour", {
             Dialog.confirm("Open Register"),
             FloorScreen.clickTable("5"),
             ProductScreen.clickDisplayedProduct("Coca-Cola", true, "1.0"),
+            ProductScreen.orderlineIsToOrder("Coca-Cola"),
             ProductScreen.clickOrderButton(),
+            Chrome.waitRequest(),
             ProductScreen.orderlinesHaveNoChange(),
+            Order.hasLine({
+                productName: "Coca-Cola",
+                quantity: 1,
+                withClass: ":eq(0)",
+            }),
             Chrome.clickPlanButton(),
+            FloorScreen.hasTable("2"),
+            FloorScreen.hasTable("4"),
+            FloorScreen.hasTable("5"),
         ].flat(),
 });
 
@@ -439,7 +449,6 @@ registry.category("web_tour.tours").add("PreparationPrinterContent", {
 });
 
 registry.category("web_tour.tours").add("ComboSortedPreparationReceiptTour", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -488,7 +497,6 @@ registry.category("web_tour.tours").add("ComboSortedPreparationReceiptTour", {
 });
 
 registry.category("web_tour.tours").add("TableTransferPreparationChange1", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -517,7 +525,6 @@ registry.category("web_tour.tours").add("TableTransferPreparationChange1", {
 });
 
 registry.category("web_tour.tours").add("TableTransferPreparationChange2", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -543,7 +550,6 @@ registry.category("web_tour.tours").add("TableTransferPreparationChange2", {
 });
 
 registry.category("web_tour.tours").add("TableTransferPreparationChange3", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -564,7 +570,6 @@ registry.category("web_tour.tours").add("TableTransferPreparationChange3", {
 });
 
 registry.category("web_tour.tours").add("TableTransferPreparationChange4", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -591,7 +596,6 @@ registry.category("web_tour.tours").add("TableTransferPreparationChange4", {
 });
 
 registry.category("web_tour.tours").add("TableTransferPreparationChange5", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -620,7 +624,6 @@ registry.category("web_tour.tours").add("TableTransferPreparationChange5", {
 });
 
 registry.category("web_tour.tours").add("TableTransferPreparationChange6", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -635,7 +638,6 @@ registry.category("web_tour.tours").add("TableTransferPreparationChange6", {
 });
 
 registry.category("web_tour.tours").add("MultiPreparationPrinter", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -649,7 +651,6 @@ registry.category("web_tour.tours").add("MultiPreparationPrinter", {
 });
 
 registry.category("web_tour.tours").add("LeaveResidualOrder", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -664,19 +665,95 @@ registry.category("web_tour.tours").add("LeaveResidualOrder", {
             FloorScreen.clickTable("5"),
             ProductScreen.clickDisplayedProduct("Coca-Cola"),
             Chrome.clickPlanButton(),
+            FloorScreen.hasTable("2"),
+            FloorScreen.hasTable("4"),
+            FloorScreen.hasTable("5"),
         ].flat(),
 });
 
 registry.category("web_tour.tours").add("FinishResidualOrder", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
+            FloorScreen.orderCountSyncedInTableIs("5", "1"),
             FloorScreen.clickTable("5"),
+            Order.hasLine({
+                productName: "Coca-Cola",
+                quantity: 1,
+                withClass: ":eq(0)",
+            }),
             ProductScreen.totalAmountIs("2.20"),
             ProductScreen.clickPayButton(),
             PaymentScreen.clickPaymentMethod("Bank"),
             PaymentScreen.clickValidate(),
             ReceiptScreen.clickNextOrder(),
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_combo_preparation_receipt_layout", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            FloorScreen.clickTable("5"),
+            ProductScreen.clickDisplayedProduct("Office Combo"),
+            combo.select("Combo Product 2"),
+            combo.select("Combo Product 4"),
+            combo.select("Combo Product 6"),
+            Dialog.confirm(),
+            {
+                trigger: ".actionpad .submit-order.highlight.btn-primary",
+            },
+            {
+                content: "Check if order preparation has product correctly ordered",
+                trigger: "body",
+                run: async () => {
+                    const order = posmodel.get_order();
+                    const data = posmodel.getOrderChanges();
+                    const changes = Object.values(data.orderlines);
+                    const printed = await posmodel.getRenderedReceipt(order, "New", changes);
+                    const comboItemLines = [...printed.querySelectorAll(".orderline.mx-5")].map(
+                        (el) => el.innerText
+                    );
+                    const expectedComboItemLines = [
+                        "1 Combo Product 2",
+                        "1 Combo Product 4",
+                        "1 Combo Product 6",
+                    ];
+                    if (
+                        comboItemLines.length !== expectedComboItemLines.length ||
+                        !comboItemLines.every((line, index) =>
+                            line.includes(expectedComboItemLines[index])
+                        )
+                    ) {
+                        throw new Error("Order line mismatch");
+                    }
+                },
+            },
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_book_and_release_table", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            FloorScreen.clickTable("5"),
+            ProductScreen.bookOrReleaseTable(),
+            waitForLoading(),
+            {
+                content: "Check if order has a server ID",
+                trigger: "body",
+                run: () => {
+                    const order = posmodel.models["pos.order"].getFirst();
+
+                    if (typeof order.id !== "number") {
+                        throw new Error("Order does not have a valid server ID");
+                    }
+                },
+            },
+            FloorScreen.clickTable("5"),
+            ProductScreen.bookOrReleaseTable(),
+            waitForLoading(),
         ].flat(),
 });

@@ -55,7 +55,7 @@ class AccountAnalyticLine(models.Model):
             if line.move_line_id and line.general_account_id != line.move_line_id.account_id:
                 raise ValidationError(_('The journal item is not linked to the correct financial account'))
 
-    @api.depends('move_line_id')
+    @api.depends('move_line_id.partner_id')
     def _compute_partner_id(self):
         for line in self:
             line.partner_id = line.move_line_id.partner_id or line.partner_id
@@ -87,3 +87,23 @@ class AccountAnalyticLine(models.Model):
                 account=self.env['account.analytic.account'].browse(self.env.context['account_id']).name
             )
         return super().view_header_get(view_id, view_type)
+
+    def create(self, vals):
+        analytic_lines = super().create(vals)
+        analytic_lines.move_line_id._update_analytic_distribution()
+        return analytic_lines
+
+    def write(self, vals):
+        affected_move_lines = self.move_line_id
+        res = super().write(vals)
+        if any(field in vals for field in ['amount', 'move_line_id'] + self._get_plan_fnames()):
+            if 'move_line_id' in vals:
+                affected_move_lines |= self.move_line_id
+            affected_move_lines._update_analytic_distribution()
+        return res
+
+    def unlink(self):
+        affected_move_lines = self.move_line_id
+        res = super().unlink()
+        affected_move_lines._update_analytic_distribution()
+        return res

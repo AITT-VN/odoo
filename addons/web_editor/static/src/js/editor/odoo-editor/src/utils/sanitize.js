@@ -245,10 +245,21 @@ function sanitizeNode(node, root) {
         node = parent; // The node has been removed, update the reference.
     } else if (node.nodeName === 'LI' && !node.closest('ul, ol')) {
         // Transform <li> into <p> if they are not in a <ul> / <ol>.
-        const paragraph = document.createElement('p');
-        paragraph.replaceChildren(...node.childNodes);
-        node.replaceWith(paragraph);
-        node = paragraph; // The node has been removed, update the reference.
+        if (node.children.length && [...node.children].every(isBlock)) {
+            // Unwrap <li> if each of its children is a block element.
+            const restoreCursor =
+                shouldPreserveCursor(node, root) && preserveCursor(root.ownerDocument);
+            const nodeToReplace = node.firstElementChild;
+            unwrapContents(node);
+            restoreCursor && restoreCursor(new Map([[node, nodeToReplace]]));
+            node = nodeToReplace;
+        } else {
+            // Otherwise, wrap its content in a new <p> element.
+            const paragraph = document.createElement("p");
+            paragraph.replaceChildren(...node.childNodes);
+            node.replaceWith(paragraph);
+            node = paragraph; // The node has been removed, update the reference.
+        }
     } else if (
         ['UL', 'OL'].includes(node.nodeName) &&
         ['UL', 'OL'].includes(node.parentNode.nodeName)
@@ -271,6 +282,7 @@ function sanitizeNode(node, root) {
         }
         if (isEditorTab(tabPreviousSibling)) {
             node.style.width = '40px';
+            node.style.tabSize = '40px';
         } else {
             const editable = closestElement(node, '.odoo-editor-editable');
             if (editable?.firstElementChild) {
@@ -282,6 +294,7 @@ function sanitizeNode(node, root) {
                 if (nodeRect.width && referenceRect.width) {
                     const width = (nodeRect.left - referenceRect.left) % 40;
                     node.style.width = (40 - width) + 'px';
+                    node.style.tabSize = (40 - width) + 'px';
                 }
             }
         }

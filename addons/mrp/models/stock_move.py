@@ -85,19 +85,27 @@ class StockMoveLine(models.Model):
         return aggregated_properties
 
     def _compute_product_packaging_qty(self):
-        kit_lines = self.filtered(lambda move_line: move_line.move_id.bom_line_id.bom_id.type == 'phantom')
+        # we catch kit lines where the packaging is still the one from the final product (it has
+        # not been changed to a packaging of a component)
+        kit_lines = self.filtered(lambda move_line: move_line.move_id.bom_line_id.bom_id.type == 'phantom' and
+        move_line.move_id.product_packaging_id and move_line.product_id != move_line.move_id.product_packaging_id.product_id)
         for move_line in kit_lines:
             move = move_line.move_id
             bom_line = move.bom_line_id
+            kit_bom = bom_line.bom_id
 
             # Convert the move line quantity to the product's move uom
             qty_move_uom = move_line.product_uom_id._compute_quantity(move_line.quantity, move_line.move_id.product_uom)
             # Convert the product's move uom to the bom line's uom
             qty_bom_uom = move.product_uom._compute_quantity(qty_move_uom, bom_line.product_uom_id)
             # calculate the bom's kit qty in kit product uom qty
-            bom_qty_product_uom = bom_line.bom_id.product_uom_id._compute_quantity(bom_line.bom_id.product_qty, move_line.move_id.bom_line_id.bom_id.product_id.uom_id)
-            # calculate the quantity needed of packging
-            move_line.product_packaging_qty = (qty_bom_uom / (bom_line.product_qty / bom_qty_product_uom)) / move_line.move_id.product_packaging_id.qty
+            bom_qty_product_uom = kit_bom.product_uom_id._compute_quantity(kit_bom.product_qty, kit_bom.product_tmpl_id.uom_id)
+            # calculate the comp/final_prod ratio of the BOM
+            kit_ratio = bom_line.product_qty / bom_qty_product_uom
+            # calculate the number of kit on the move line according to the number of comp
+            kit_qty = qty_bom_uom / kit_ratio
+            # calculate the quantity needed of packaging
+            move_line.product_packaging_qty = kit_qty / move_line.move_id.product_packaging_id.qty
         super(StockMoveLine, self - kit_lines)._compute_product_packaging_qty()
 
     @api.model
@@ -130,8 +138,14 @@ class StockMoveLine(models.Model):
             line = aggregated_move_lines[key]
             bom_id = line['bom']
             kit_qty_ordered, kit_qty_done = kit_qty[bom_id.id]
-            line['packaging_qty'] = line['packaging']._compute_qty(kit_qty_ordered, bom_id.product_uom_id)
-            line['packaging_quantity'] = line['packaging']._compute_qty(kit_qty_done, bom_id.product_uom_id)
+            if line['packaging'].product_id == line['product']:
+                # If packaging has been set directly on the move
+                line['packaging_qty'] = line['packaging']._compute_qty(line['qty_ordered'], line['product_uom'])
+                line['packaging_quantity'] = line['packaging']._compute_qty(line['quantity'], line['product_uom'])
+            else:
+                # If packaging comes from the kit
+                line['packaging_qty'] = line['packaging']._compute_qty(kit_qty_ordered, bom_id.product_uom_id)
+                line['packaging_quantity'] = line['packaging']._compute_qty(kit_qty_done, bom_id.product_uom_id)
             aggregated_move_lines[key] = line
 
         non_kit_ml = super()._compute_packaging_qtys(non_kit_ml)
@@ -518,7 +532,7 @@ class StockMove(models.Model):
         return super(StockMove, moves)._action_done(cancel_backorder)
 
     def _should_bypass_reservation(self, forced_location=False):
-        return super()._should_bypass_reservation(forced_location) or self.product_id.is_kits
+        return super()._should_bypass_reservation(forced_location) or self.product_id.with_company(self.company_id).is_kits
 
     def action_explode(self):
         """ Explodes pickings """
@@ -674,6 +688,12 @@ class StockMove(models.Model):
     def _key_assign_picking(self):
         keys = super(StockMove, self)._key_assign_picking()
         return keys + (self.created_production_id,)
+
+    def _get_moves_to_propagate_date_deadline(self):
+        res = super()._get_moves_to_propagate_date_deadline()
+        if self.production_id:
+            res |= self.production_id.move_finished_ids - self
+        return res
 
     @api.model
     def _prepare_merge_moves_distinct_fields(self):

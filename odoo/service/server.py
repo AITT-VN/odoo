@@ -16,6 +16,7 @@ import sys
 import threading
 import time
 import contextlib
+from email.utils import parsedate_to_datetime
 from io import BytesIO
 
 import psutil
@@ -121,6 +122,11 @@ class BaseWSGIServerNoBind(LoggingBaseWSGIServerMixIn, werkzeug.serving.BaseWSGI
 
 
 class RequestHandler(werkzeug.serving.WSGIRequestHandler):
+    def __init__(self, *args, **kwargs):
+        self._sent_date_header = None
+        self._sent_server_header = None
+        super().__init__(*args, **kwargs)
+
     def setup(self):
         # timeout to avoid chrome headless preconnect during tests
         if config['test_enable'] or config['test_file']:
@@ -149,6 +155,33 @@ class RequestHandler(werkzeug.serving.WSGIRequestHandler):
             # Do not keep processing requests.
             self.close_connection = True
             return
+
+        if keyword.casefold() == 'date':
+            if self._sent_date_header is None:
+                self._sent_date_header = value
+            elif self._sent_date_header == value:
+                return  # don't send the same header twice
+            else:
+                sent_datetime = parsedate_to_datetime(self._sent_date_header)
+                new_datetime = parsedate_to_datetime(value)
+                if sent_datetime == new_datetime:
+                    return  # don't send the same date twice (differ in format)
+                if abs((sent_datetime - new_datetime).total_seconds()) <= 1:
+                    return  # don't send the same date twice (jitter of 1 second)
+                _logger.warning(
+                    "sending two different Date response headers: %r vs %r",
+                    self._sent_date_header, value)
+
+        if keyword.casefold() == 'server':
+            if self._sent_server_header is None:
+                self._sent_server_header = value
+            elif self._sent_server_header == value:
+                return  # don't send the same header twice
+            else:
+                _logger.warning(
+                    "sending two different Server response headers: %r vs %r",
+                    self._sent_server_header, value)
+
         super().send_header(keyword, value)
 
     def end_headers(self, *a, **kw):
@@ -160,6 +193,12 @@ class RequestHandler(werkzeug.serving.WSGIRequestHandler):
         if self.headers.get('Upgrade') == 'websocket':
             self.rfile = BytesIO()
             self.wfile = BytesIO()
+
+    def log_error(self, format, *args):
+        if format == "Request timed out: %r" and config['test_enable']:
+            _logger.info(format, *args)
+        else:
+            super().log_error(format, *args)
 
 class ThreadedWSGIServerReloadable(LoggingBaseWSGIServerMixIn, werkzeug.serving.ThreadedWSGIServer):
     """ werkzeug Threaded WSGI Server patched to allow reusing a listen socket
@@ -1261,7 +1300,8 @@ server = None
 server_phoenix = False
 
 def load_server_wide_modules():
-    server_wide_modules = {'base', 'web'} | set(odoo.conf.server_wide_modules)
+    server_wide_modules = list(odoo.conf.server_wide_modules)
+    server_wide_modules.extend(m for m in ('base', 'web') if m not in server_wide_modules)
     for m in server_wide_modules:
         try:
             odoo.modules.module.load_openerp_module(m)

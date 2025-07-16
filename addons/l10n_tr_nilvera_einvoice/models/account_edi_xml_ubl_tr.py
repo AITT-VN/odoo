@@ -1,30 +1,7 @@
-from odoo import models
+import math
+from num2words import num2words
 
-UOM_TO_UNECE_CODE = {
-    'l10n_tr_nilvera.product_uom_pk': 'PK',
-    'l10n_tr_nilvera.product_uom_pf': 'PF',
-    'l10n_tr_nilvera.product_uom_cr': 'CR',
-    'l10n_tr_nilvera.product_uom_standard_cubic_meter': 'SM3',
-    'l10n_tr_nilvera.product_uom_sa': 'SA',
-    'l10n_tr_nilvera.product_uom_cmq': 'CMQ',
-    'l10n_tr_nilvera.product_uom_mlt': 'MLT',
-    'l10n_tr_nilvera.product_uom_mmq': 'MMQ',
-    'l10n_tr_nilvera.product_uom_cmk': 'CMK',
-    'l10n_tr_nilvera.product_uom_bg': 'BG',
-    'l10n_tr_nilvera.product_uom_bx': 'BX',
-    'l10n_tr_nilvera.product_uom_pr': 'PR',
-    'l10n_tr_nilvera.product_uom_mgm': 'MGM',
-    'l10n_tr_nilvera.product_uom_mon': 'MON',
-    'l10n_tr_nilvera.product_uom_gt': 'GT',
-    'l10n_tr_nilvera.product_uom_ann': 'ANN',
-    'l10n_tr_nilvera.product_uom_d61': 'D61',
-    'l10n_tr_nilvera.product_uom_d62': 'D62',
-    'l10n_tr_nilvera.product_uom_pa': 'PA',
-    'l10n_tr_nilvera.product_uom_mwh': 'MWH',
-    'l10n_tr_nilvera.product_uom_kwh': 'KWH',
-    'l10n_tr_nilvera.product_uom_kwt': 'KWT',
-    'l10n_tr_nilvera.product_uom_set': 'SET',
-}
+from odoo import api, models
 
 
 class AccountEdiXmlUblTr(models.AbstractModel):
@@ -46,7 +23,7 @@ class AccountEdiXmlUblTr(models.AbstractModel):
             # To send an invoice to Nlvera, the format needs to follow ABC2009123456789.
             parts = invoice.name.split('/')
             prefix, year, number = parts[0], parts[1], parts[2].zfill(9)
-            return f"{prefix}{year}{number}"
+            return f"{prefix.upper()}{year}{number}"
 
         # EXTENDS account.edi.xml.ubl_21
         vals = super()._export_invoice_vals(invoice)
@@ -65,8 +42,27 @@ class AccountEdiXmlUblTr(models.AbstractModel):
             'due_date': False,
             'line_count_numeric': len(invoice.line_ids),
             'order_issue_date': invoice.invoice_date,
+            'pricing_currency_code': invoice.currency_id.name.upper() if invoice.currency_id != invoice.company_id.currency_id else False,
+            'currency_dp': 2,
         })
+        # Nilvera will reject any <BuyerReference> tag, so remove it
+        if vals['vals'].get('buyer_reference'):
+            del vals['vals']['buyer_reference']
+
+        vals['vals']['note_vals'].append({'note': self._l10n_tr_get_amount_integer_partn_text_note(invoice.amount_residual_signed, self.env.ref('base.TRY')), 'note_attrs': {}})
+        if vals['invoice'].currency_id.name != 'TRY':
+            vals['vals']['note_vals'].append({'note': self._l10n_tr_get_amount_integer_partn_text_note(invoice.amount_residual, vals['invoice'].currency_id), 'note_attrs': {}})
         return vals
+
+    @api.model
+    def _l10n_tr_get_amount_integer_partn_text_note(self, amount, currency):
+        sign = math.copysign(1.0, amount)
+        amount_integer_part, amount_decimal_part = divmod(abs(amount), 1)
+        amount_decimal_part = int(amount_decimal_part * 100)
+
+        text_i = num2words(amount_integer_part * sign, lang="tr") or 'Sifir'
+        text_d = num2words(amount_decimal_part * sign, lang="tr") or 'Sifir'
+        return f'YALNIZ : {text_i} {currency.name} {text_d} {currency.currency_subunit_label}'.upper()
 
     def _get_country_vals(self, country):
         # EXTENDS account.edi.xml.ubl_21
@@ -77,6 +73,9 @@ class AccountEdiXmlUblTr(models.AbstractModel):
     def _get_partner_party_identification_vals_list(self, partner):
         # EXTENDS account.edi.xml.ubl_21
         vals = super()._get_partner_party_identification_vals_list(partner)
+        # Nilvera will reject any <ID> without a <schemeID>, so remove all items not
+        # having the following structure : {'id': '...', 'id_attrs': {'schemeID': '...'}}
+        vals = [v for v in vals if v.get('id') and v.get('id_attrs', {}).get('schemeID')]
         vals.append({
             'id_attrs': {
                 'schemeID': 'VKN' if partner.is_company else 'TCKN',
@@ -101,6 +100,12 @@ class AccountEdiXmlUblTr(models.AbstractModel):
         vals_list = super()._get_partner_party_tax_scheme_vals_list(partner, role)
         for vals in vals_list:
             vals.pop('registration_address_vals', None)
+            vals["tax_scheme_vals"].update(
+                {
+                    "id": "",
+                    "name": partner.ref,
+                }
+            )
         return vals_list
 
     def _get_partner_party_legal_entity_vals_list(self, partner):
@@ -109,6 +114,16 @@ class AccountEdiXmlUblTr(models.AbstractModel):
         for vals in vals_list:
             vals.pop('registration_address_vals', None)
         return vals_list
+
+    def _get_partner_person_vals(self, partner):
+        if not partner.is_company:
+            name_parts = partner.name.split(' ', 1)
+            return {
+                'first_name': name_parts[0],
+                # If no family name is present, use a zero-width space (U+200B) to ensure the XML tag is rendered. This is required by Nilvera.
+                'family_name': name_parts[1] if len(name_parts) > 1 else '\u200B',
+            }
+        return super()._get_partner_person_vals(partner)
 
     def _get_delivery_vals_list(self, invoice):
         # EXTENDS account.edi.xml.ubl_21
@@ -145,7 +160,9 @@ class AccountEdiXmlUblTr(models.AbstractModel):
         tax_totals_vals = super()._get_invoice_tax_totals_vals_list(invoice, taxes_vals)
 
         for vals in tax_totals_vals:
+            vals['currency_dp'] = 2
             for subtotal_vals in vals.get('tax_subtotal_vals', []):
+                subtotal_vals['currency_dp'] = 2
                 subtotal_vals.get('tax_category_vals', {})['id'] = False
                 subtotal_vals.get('tax_category_vals', {})['percent'] = False
 
@@ -158,7 +175,22 @@ class AccountEdiXmlUblTr(models.AbstractModel):
         vals['allowance_total_amount'] = allowance_total_amount
         if invoice.currency_id.is_zero(vals.get('prepaid_amount', 1)):
             del vals['prepaid_amount']
+        vals['currency_dp'] = 2
         return vals
+
+    def _get_invoice_period_vals_list(self, invoice):
+        if invoice.invoice_line_ids._fields.get('deferred_start_date'):
+            # Returns the start and end date of first invoice line since it is required that all lines must have
+            # the same start and end date.
+            line_ids = invoice.invoice_line_ids.filtered(lambda line: line.display_type == 'product' and line.deferred_start_date)
+            if line_ids:
+                return [
+                    {
+                        'start_date': line_ids[0].deferred_start_date,
+                        'end_date': line_ids[0].deferred_end_date,
+                    },
+                ]
+        return super()._get_invoice_period_vals_list(invoice)
 
     def _get_invoice_line_item_vals(self, line, taxes_vals):
         # EXTENDS account.edi.xml.ubl_21
@@ -177,25 +209,38 @@ class AccountEdiXmlUblTr(models.AbstractModel):
             })
         return additional_document_reference_list
 
+    def _get_invoice_line_allowance_vals_list(self, line, tax_values_list=None):
+        # EXTENDS account.edi.xml.ubl_20
+        vals_list = super()._get_invoice_line_allowance_vals_list(line, tax_values_list)
+        for vals in vals_list:
+            vals.pop('allowance_charge_reason_code', None)
+            vals['currency_dp'] = 2
+        return vals_list
+
     def _get_invoice_line_price_vals(self, line):
         # EXTEND 'account.edi.common'
         invoice_line_price_vals = super()._get_invoice_line_price_vals(line)
-        invoice_line_price_vals['base_quantity_attrs'] = {'unitCode': self._get_uom_unece_code(line)}
+        invoice_line_price_vals['base_quantity_attrs'] = {'unitCode': line.product_uom_id._get_unece_code()}
+        invoice_line_price_vals['currency_dp'] = 2
         return invoice_line_price_vals
 
     def _get_invoice_line_vals(self, line, line_id, taxes_vals):
         invoice_line_vals = super()._get_invoice_line_vals(line, line_id, taxes_vals)
-        invoice_line_vals['line_quantity_attrs'] = {'unitCode': self._get_uom_unece_code(line)}
+        invoice_line_vals['line_quantity_attrs'] = {'unitCode': line.product_uom_id._get_unece_code()}
+        invoice_line_vals['currency_dp'] = 2
+        invoice_line_vals.pop('invoice_period_vals_list', None)
         return invoice_line_vals
 
-    def _get_uom_unece_code(self, line):
-        """ This depends on the mapping from https://developer.nilvera.com/en/code-lists#birim-kodlari """
-        uom = super()._get_uom_unece_code(line)
-        if uom == 'C62':
-            xmlid = line.product_uom_id.get_external_id()
-            if xmlid and line.product_uom_id.id in xmlid:
-                return UOM_TO_UNECE_CODE.get(xmlid[line.product_uom_id.id], 'C62')
-        return uom
+    def _get_pricing_exchange_rate_vals_list(self, invoice):
+        # EXTENDS 'account.edi.xml.ubl_20'
+        if invoice.currency_id != invoice.company_id.currency_id:
+            return [{
+                'source_currency_code': invoice.currency_id.name.upper(),
+                'target_currency_code': invoice.company_id.currency_id.name.upper(),
+                'calculation_rate': round(invoice.currency_id._get_conversion_rate(invoice.currency_id, invoice.company_id.currency_id, invoice.company_id, invoice.invoice_date), 6),
+                'date': invoice.invoice_date,
+            }]
+        return []
 
     # -------------------------------------------------------------------------
     # IMPORT

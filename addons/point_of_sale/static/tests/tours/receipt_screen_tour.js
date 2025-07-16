@@ -10,7 +10,6 @@ import { registry } from "@web/core/registry";
 import { inLeftSide } from "@point_of_sale/../tests/tours/utils/common";
 
 registry.category("web_tour.tours").add("ReceiptScreenTour", {
-    checkDelay: 50,
     steps: () =>
         [
             // press close button in receipt screen
@@ -102,7 +101,6 @@ registry.category("web_tour.tours").add("ReceiptScreenTour", {
 });
 
 registry.category("web_tour.tours").add("ReceiptScreenDiscountWithPricelistTour", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -131,7 +129,6 @@ registry.category("web_tour.tours").add("ReceiptScreenDiscountWithPricelistTour"
 });
 
 registry.category("web_tour.tours").add("OrderPaidInCash", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -150,13 +147,20 @@ registry.category("web_tour.tours").add("OrderPaidInCash", {
             ProductScreen.closeWithCashAmount("25"),
             ProductScreen.cashDifferenceIs("0.00"),
             Dialog.confirm("Close Register"),
-            Chrome.clickBtn("Backend"),
+            {
+                trigger: "button:contains(backend)",
+                run: "click",
+                expectUnloadPage: true,
+            },
+            {
+                trigger: "body",
+                expectUnloadPage: true,
+            },
             ProductScreen.lastClosingCashIs("25.00"),
         ].flat(),
 });
 
 registry.category("web_tour.tours").add("ReceiptTrackingMethodTour", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),

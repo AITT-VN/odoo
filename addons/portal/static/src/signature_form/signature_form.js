@@ -13,7 +13,7 @@ import { NameAndSignature } from "@web/core/signature/name_and_signature";
  * @see NameAndSignature for the input fields, adds a submit
  * button, and handles the RPC to save the result.
  */
-class SignatureForm extends Component {
+export class SignatureForm extends Component {
     static template = "portal.SignatureForm"
     static components = { NameAndSignature }
     static props = ["*"];
@@ -26,7 +26,11 @@ class SignatureForm extends Component {
             error: false,
             success: false,
         });
-        this.signature = useState({ name: this.props.defaultName });
+        this.signature = useState({
+            name: this.props.defaultName,
+            getSignatureImage: () => "",
+            resetSignature: () => {},
+        });
         this.nameAndSignatureProps = {
             signature: this.signature,
             fontColor: this.props.fontColor || "black",

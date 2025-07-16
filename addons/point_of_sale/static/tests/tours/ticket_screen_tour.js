@@ -11,7 +11,6 @@ import { inLeftSide } from "@point_of_sale/../tests/tours/utils/common";
 import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add("TicketScreenTour", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -160,7 +159,6 @@ registry.category("web_tour.tours").add("TicketScreenTour", {
 });
 
 registry.category("web_tour.tours").add("FiscalPositionNoTaxRefund", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -181,11 +179,14 @@ registry.category("web_tour.tours").add("FiscalPositionNoTaxRefund", {
             ProductScreen.isShown(),
             { ...ProductScreen.back(), isActive: ["mobile"] },
             ProductScreen.totalAmountIs("100.00"),
+            ProductScreen.clickPayButton(),
+            PaymentScreen.clickPaymentMethod("Bank"),
+            PaymentScreen.clickValidate(),
+            ReceiptScreen.isShown(),
         ].flat(),
 });
 
 registry.category("web_tour.tours").add("LotRefundTour", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -210,7 +211,6 @@ registry.category("web_tour.tours").add("LotRefundTour", {
 });
 
 registry.category("web_tour.tours").add("RefundFewQuantities", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),
@@ -239,7 +239,6 @@ registry.category("web_tour.tours").add("RefundFewQuantities", {
 });
 
 registry.category("web_tour.tours").add("LotTour", {
-    checkDelay: 50,
     steps: () =>
         [
             Chrome.startPoS(),

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 13:22+0000\n"
+"POT-Creation-Date: 2025-06-27 18:38+0000\n"
 "PO-Revision-Date: 2024-09-25 09:42+0000\n"
 "Last-Translator: Naser mars, 2025\n"
 "Language-Team: Persian (https://app.transifex.com/odoo/teams/41243/fa/)\n"
@@ -133,6 +133,8 @@ msgid ""
 "\"Write a quote here from one of your customers. Quotes are a great way to "
 "build confidence in your products.\""
 msgstr ""
+"\"اینجا یک پیش فاکتور از یکی از مشتریان خود بنویسید. پیش فاکتورها راهی عالی "
+"برای ایجاد اعتماد به محصولات شما هستند.\""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_visitor__page_count
@@ -1825,6 +1827,16 @@ msgid ""
 msgstr ""
 
 #. module: website
+#: model_terms:ir.ui.view,arch_db:website.s_numbers_charts
+msgid "<span class=\"s_progress_bar_text small d-none\">25%</span>"
+msgstr ""
+
+#. module: website
+#: model_terms:ir.ui.view,arch_db:website.s_numbers_charts
+msgid "<span class=\"s_progress_bar_text small d-none\">80%</span>"
+msgstr ""
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_progress_bar
 msgid "<span class=\"s_progress_bar_text small\">80%</span>"
 msgstr ""
@@ -2079,7 +2091,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_image_punchy
 msgid "A PUNCHY HEADLINE"
-msgstr ""
+msgstr "یک سرفصل عالی"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_product_catalog
@@ -4732,6 +4744,10 @@ msgid ""
 " levels. Combine headers, images, and text sections to build cohesive "
 "layouts quickly and efficiently."
 msgstr ""
+"با کشیدن و رها کردن بلوک های قابل تنظیم، صفحات را از ابتدا ایجاد کنید. این "
+"سیستم طراحی وب را ساده می کند و آن را برای تمام سطوح مهارت در دسترس قرار می "
+"دهد. هدرها، تصاویر و بخش‌های متن را با هم ترکیب کنید تا طرح‌بندی‌های منسجمی "
+"را سریع و کارآمد بسازید."
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_theme_ir_asset__create_uid
@@ -4928,7 +4944,7 @@ msgstr "د - س - د - ث"
 #. odoo-javascript
 #: code:addons/website/static/src/components/wysiwyg_adapter/wysiwyg_adapter.js:0
 msgid "DRAG BUILDING BLOCKS HERE"
-msgstr "اینجا بلاک‌های ساختمانی را بکشید و رها کنید"
+msgstr "اینجا بلاک‌های ایجادی را بکشید و رها کنید"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_alert_options
@@ -5015,7 +5031,7 @@ msgstr "عدد اعشاری"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_blockquote_options
 msgid "Decoration"
-msgstr ""
+msgstr "دکوراسیون"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team
@@ -5746,7 +5762,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_process_steps
 msgid "Duplicate blocks to add more steps."
-msgstr ""
+msgstr "برای افزودن مراحل بیشتر، بلوک‌ها را کپی کنید."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -7394,7 +7410,6 @@ msgstr "عنوان ۱"
 #. module: website
 #. odoo-javascript
 #: code:addons/website/static/src/js/editor/snippets.editor.js:0
-#: code:addons/website/static/src/xml/website.editor.xml:0
 msgid "Headings"
 msgstr "عناوین"
 
@@ -7404,36 +7419,26 @@ msgid "Headings 1"
 msgstr "هدینگ 1"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 2"
 msgstr "هدینگ 2"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 3"
 msgstr "هدینگ 3"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 4"
 msgstr "هدینگ 4"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 5"
 msgstr "هدینگ 5"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.bs_debug_view
 msgid "Headings 6"
 msgstr "هدینگ 6"
@@ -7678,7 +7683,7 @@ msgstr ""
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Hue"
-msgstr "<span>رنگ</span>"
+msgstr "رنگ"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_company_team_detail
@@ -9179,8 +9184,6 @@ msgid "Linkedin"
 msgstr "Linkedin"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Links"
 msgstr "روابط"
@@ -9255,6 +9258,7 @@ msgstr "ویجت گفتگوی زنده"
 #: code:addons/website/static/src/client_actions/website_preview/website_preview.xml:0
 #: code:addons/website/static/src/components/dialog/add_page_dialog.js:0
 #: code:addons/website/static/src/components/dialog/seo.xml:0
+#: code:addons/website/static/src/js/editor/html_editor.js:0
 #: code:addons/website/static/src/xml/web_editor.xml:0
 #: code:addons/website/static/src/xml/website.background.video.xml:0
 msgid "Loading..."
@@ -10693,6 +10697,11 @@ msgid ""
 "themes and an intuitive system, you can design with ease and precision, "
 "ensuring a polished, responsive result."
 msgstr ""
+"ویژگی های طراحی ما طیف وسیعی از ابزارها را برای ایجاد وب سایت های بصری خیره "
+"کننده ارائه می دهد. از ویرایشگرهای WYSIWYG، بلوک‌های ایجادی با کشیدن و رها "
+"کردن، و قالب‌های مبتنی بر بوت استرپ برای سفارشی‌سازی بدون دردسر استفاده "
+"کنید. با تم های حرفه ای و یک سیستم بصری، می توانید با سهولت و دقت طراحی کنید"
+" و از نتیجه جلا و پاسخگو اطمینان حاصل کنید."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_faq_horizontal
@@ -11423,12 +11432,6 @@ msgid "Primary"
 msgstr "اولیه"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
-msgid "Primary Buttons"
-msgstr "دکمه‌های اصلی"
-
-#. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Primary Style"
 msgstr "سبک اولیه"
@@ -11630,6 +11633,11 @@ msgid "Punchy Image"
 msgstr ""
 
 #. module: website
+#: model:ir.model.fields,field_description:website.field_website__domain_punycode
+msgid "Punycode Domain"
+msgstr ""
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.cookie_policy
 msgid "Purpose"
 msgstr "هدف"
@@ -11728,7 +11736,7 @@ msgstr "نسبت"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Re-order"
-msgstr "<html>ترتیب مجدد</html>"
+msgstr "سفارش مجدد"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_masonry_block_default_template
@@ -12421,12 +12429,6 @@ msgid "Secondary"
 msgstr "ثانویه"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
-msgid "Secondary Buttons"
-msgstr "دکمه‌های ثانویه"
-
-#. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Secondary Style"
 msgstr "سبک ثانویه"
@@ -12495,7 +12497,7 @@ msgstr "انتخاب و حذف بلوک‌ها برای حذف ویژگی‌ها
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_process_steps
 msgid "Select and delete blocks to remove some steps."
-msgstr ""
+msgstr "برای حذف برخی از مراحل بلوک ها را انتخاب و حذف کنید."
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
@@ -13518,8 +13520,6 @@ msgid "Test your robots.txt with Google Search Console"
 msgstr "ربات robots.txt خود را با کنسول جستجوی گوگل آزمایش کنید"
 
 #. module: website
-#. odoo-javascript
-#: code:addons/website/static/src/xml/website.editor.xml:0
 #: model_terms:ir.ui.view,arch_db:website.grid_layout_options
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
@@ -13729,6 +13729,12 @@ msgstr "حد، حداکثر تعداد رکوردهای بازیابی شده ا
 #: code:addons/website/models/website_snippet_filter.py:0
 msgid "The limit must be between 1 and 16."
 msgstr "محدوده باید بین 1 تا 16 باشد"
+
+#. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/client_actions/configurator/configurator.js:0
+msgid "The logo is too large. Please upload a logo smaller than 2.5 MB."
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
@@ -14547,6 +14553,12 @@ msgstr ""
 "۳۰۸ تغییر مسیر / بازنویسی: اگر بخواهید یک کنترلر را با یک آدرس جدید تغییر نام دهید. (مثال: /shop -> /garden - هر دو آدرس در دسترس خواهند بود اما /shop به طور خودکار به /garden هدایت می‌شود)"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/xml/html_editor.xml:0
+msgid "Type your URL"
+msgstr ""
+
+#. module: website
 #: model:ir.model.fields,field_description:website.field_website_controller_page__name_slugified
 #: model_terms:ir.ui.view,arch_db:website.s_countdown_options
 #: model_terms:ir.ui.view,arch_db:website.s_website_form_options
@@ -14566,6 +14578,12 @@ msgstr "از URL"
 msgid "URL matching those filters will be rewritten using the CDN Base URL"
 msgstr ""
 "مطابقت URL با این فیلترها با استفاده از URL پایه CDN بازنویسی خواهد شد."
+
+#. module: website
+#. odoo-python
+#: code:addons/website/models/website_rewrite.py:0
+msgid "URL must not start with '#'."
+msgstr ""
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website_rewrite__url_to
@@ -15949,12 +15967,6 @@ msgstr ""
 
 #. module: website
 #. odoo-javascript
-#: code:addons/website/static/src/xml/website_form_editor.xml:0
-msgid "Yes"
-msgstr "بله"
-
-#. module: website
-#. odoo-javascript
 #: code:addons/website/static/src/client_actions/website_preview/website_preview.js:0
 msgid ""
 "You are about to be redirected to the domain configured for your website ( "
@@ -16317,6 +16329,12 @@ msgstr "یک فروشگاه آنلاین"
 #: code:addons/website/static/src/client_actions/configurator/configurator.xml:0
 msgid "and"
 msgstr "و"
+
+#. module: website
+#. odoo-python
+#: code:addons/website/models/website_rewrite.py:0
+msgid "base URL of 'URL to' should not be same as 'URL from'."
+msgstr ""
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippets

@@ -1835,7 +1835,7 @@ class BaseModel(metaclass=MetaModel):
                 continue
             try:
                 domains.append([(field_name, operator, field.convert_to_write(value, self))])
-            except ValueError:
+            except (ValueError, TypeError):
                 pass  # ignore that case if the value doesn't match the field type
 
         return aggregator(domains)
@@ -2607,10 +2607,7 @@ class BaseModel(metaclass=MetaModel):
                     value = value.id
 
                 if not value and field.type == 'many2many':
-                    other_values = [other_row[group][0] if isinstance(other_row[group], tuple)
-                                    else other_row[group].id if isinstance(other_row[group], BaseModel)
-                                    else other_row[group] for other_row in rows_dict if other_row[group]]
-                    additional_domain = [(field_name, 'not in', other_values)]
+                    additional_domain = [(field_name, 'not any', [])]
                 else:
                     additional_domain = [(field_name, '=', value)]
 
@@ -3645,7 +3642,7 @@ class BaseModel(metaclass=MetaModel):
                 # field is translated to avoid converting its column to varchar
                 # and losing data
                 translate = next((
-                    field.args['translate'] for field in reversed(fields_) if 'translate' in field.args
+                    field._args__['translate'] for field in reversed(fields_) if 'translate' in field._args__
                 ), False)
                 if not translate:
                     # patch the field definition by adding an override
@@ -3655,7 +3652,7 @@ class BaseModel(metaclass=MetaModel):
                 cls._fields[name] = fields_[0]
             else:
                 Field = type(fields_[-1])
-                self._add_field(name, Field(_base_fields=fields_))
+                self._add_field(name, Field(_base_fields=tuple(fields_)))
 
         # 2. add manual fields
         if self.pool._init_modules:
@@ -5402,7 +5399,7 @@ class BaseModel(metaclass=MetaModel):
             if fname not in self or self._fields[fname].type != 'properties':
                 continue
             field_converter = self._fields[fname].convert_to_cache
-            to_write[fname] = dict(self[fname], **field_converter(values.pop(fname), self))
+            to_write[fname] = dict(self[fname] or {}, **field_converter(values.pop(fname), self))
 
         self.write(values)
         if to_write:
@@ -7037,6 +7034,9 @@ class BaseModel(metaclass=MetaModel):
 
     def __hash__(self):
         return hash((self._name, frozenset(self._ids)))
+
+    def __deepcopy__(self, memo):
+        return self
 
     @typing.overload
     def __getitem__(self, key: int | slice) -> Self: ...

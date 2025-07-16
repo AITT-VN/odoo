@@ -5,12 +5,12 @@ import * as wsTourUtils from '@website_sale/js/tours/tour_utils';
 
 registry.category("web_tour.tours").add('check_shipping_discount', {
     url: '/shop?search=Plumbus',
-    checkDelay: 50,
     steps: () => [
         {
             content: "select Plumbus",
             trigger: '.oe_product a:contains("Plumbus")',
             run: "click",
+            expectUnloadPage: true,
         },
         {
             content: "add 3 Plumbus into cart",
@@ -46,6 +46,7 @@ registry.category("web_tour.tours").add('check_shipping_discount', {
             content: "pay with eWallet",
             trigger: 'form[name=claim_reward] a.btn-primary:contains(Pay with eWallet)',
             run: 'click',
+            expectUnloadPage: true,
         },
         {
             trigger: ".o_total_card:contains(order summary)",
@@ -80,6 +81,7 @@ registry.category("web_tour.tours").add('check_shipping_discount', {
             content: "confirm shipping method",
             trigger: '.o_total_card a[name=website_sale_main_button]',
             run: 'click',
+            expectUnloadPage: true,
         },
         {
             content: "confirm order using eWallet as payment",

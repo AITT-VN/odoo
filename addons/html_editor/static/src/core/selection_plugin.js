@@ -5,7 +5,6 @@ import {
     isProtected,
     isProtecting,
     isUnprotecting,
-    previousLeaf,
 } from "@html_editor/utils/dom_info";
 import {
     childNodes,
@@ -16,14 +15,14 @@ import {
 } from "@html_editor/utils/dom_traversal";
 import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
 import { Plugin } from "../plugin";
-import { DIRECTIONS, endPos, leftPos, nodeSize, rightPos } from "../utils/position";
+import { DIRECTIONS, leftPos, nodeSize, rightPos } from "../utils/position";
 import {
     getAdjacentCharacter,
     normalizeCursorPosition,
     normalizeDeepCursorPosition,
     normalizeFakeBR,
 } from "../utils/selection";
-import { scrollTo } from "@web/core/utils/scrolling";
+import { closestScrollableY } from "@web/core/utils/scrolling";
 
 /**
  * @typedef { Object } EditorSelection
@@ -111,21 +110,38 @@ function getUnselectedEdgeNodes(selection) {
 }
 
 /**
- * Check if an element is in the viewport.
- *
- * @param {HTMLElement} element - The element to check.
- * @param {Object} [options] - Options for the observer.
- * @param {number} [options.threshold=0.5] - The intersection observer threshold.
- * @returns {Promise<boolean>} - A promise that resolves with a boolean indicating whether the element is in the viewport.
+ * Scrolls the view to a specific node's position in the document
+ * @param {Selection} selection - The current document selection
+ * @returns {void}
  */
-function isElementInViewport(element, options = { threshold: 0.5 }) {
-    return new Promise((resolve) => {
-        const observer = new IntersectionObserver(([entry]) => {
-            resolve(entry.isIntersecting);
-            observer.disconnect();
-        }, options);
-        observer.observe(element);
-    });
+function scrollToSelection(selection) {
+    const range = selection.getRangeAt(0);
+    const container = closestScrollableY(range.startContainer.parentElement);
+    if (!container) {
+        // If the container is not scrollable we don't scroll
+        return;
+    }
+    let rect = range.getBoundingClientRect();
+    // If the range is invisible (0 width & height),
+    // We call `getBoundingClientRect` on closest element.
+    if (rect.width === 0 && rect.height === 0 && selection.isCollapsed) {
+        rect = closestElement(selection.anchorNode).getBoundingClientRect();
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const offsetTop = rect.top - containerRect.top + container.scrollTop;
+    const offsetBottom = rect.bottom - containerRect.top + container.scrollTop;
+
+    if (rect.bottom > containerRect.top && rect.top < containerRect.bottom) {
+        // If selection is partially visible, no need to scroll.
+        return;
+    }
+    // Simulate the "nearest" behavior by scrolling to the closest top/bottom edge
+    if (rect.top < containerRect.top) {
+        container.scrollTo({ top: offsetTop, behavior: "instant" });
+    } else if (rect.bottom > containerRect.bottom) {
+        container.scrollTo({ top: offsetBottom - container.clientHeight, behavior: "instant" });
+    }
 }
 
 /**
@@ -176,20 +192,16 @@ export class SelectionPlugin extends Plugin {
 
     setup() {
         this.resetSelection();
-        this.addDomListener(this.document, "selectionchange", async () => {
+        this.addDomListener(this.document, "selectionchange", () => {
             this.updateActiveSelection();
             const selection = this.document.getSelection();
-            if (selection.isCollapsed && this.isSelectionInEditable(selection)) {
-                const element = closestElement(selection.focusNode);
-                const isInViewport = await isElementInViewport(element);
-                if (!isInViewport) {
-                    scrollTo(element);
-                }
+            if (this.isSelectionInEditable(selection)) {
+                scrollToSelection(selection);
             }
         });
         this.addDomListener(this.editable, "mousedown", (ev) => {
-            if (ev.detail >= 3) {
-                this.correctTripleClick = true;
+            if (ev.detail === 2) {
+                this.correctDoubleClick = true;
             }
             this.handleEmptySelection();
         });
@@ -206,6 +218,11 @@ export class SelectionPlugin extends Plugin {
                 this.onKeyDownArrows(ev);
             }
         });
+        this.addDomListener(this.editable, "click", (ev) => {
+            if (ev.detail % 3 === 0) {
+                this.onTripleClick(ev);
+            }
+        });
     }
 
     selectAll() {
@@ -219,6 +236,18 @@ export class SelectionPlugin extends Plugin {
 
     resetSelection() {
         this.activeSelection = this.makeActiveSelection();
+    }
+
+    onTripleClick() {
+        const selectionData = this.getSelectionData();
+        if (selectionData.documentSelectionIsInEditable) {
+            const { documentSelection } = selectionData;
+            const block = closestBlock(documentSelection.anchorNode);
+            const [anchorNode, anchorOffset] = getDeepestPosition(block, 0);
+            const [focusNode, focusOffset] = getDeepestPosition(block, nodeSize(block));
+            this.setSelection({ anchorNode, anchorOffset, focusNode, focusOffset });
+            return;
+        }
     }
 
     handleEmptySelection() {
@@ -258,12 +287,29 @@ export class SelectionPlugin extends Plugin {
         this.previousActiveSelection = this.activeSelection;
         const selectionData = this.getSelectionData();
         if (selectionData.documentSelectionIsInEditable) {
-            if (this.correctTripleClick) {
-                this.correctTripleClick = false;
-                let { anchorNode, anchorOffset, focusNode, focusOffset } = this.activeSelection;
-                if (focusOffset === 0 && anchorNode !== focusNode) {
-                    [focusNode, focusOffset] = endPos(previousLeaf(focusNode));
-                    return this.setSelection({ anchorNode, anchorOffset, focusNode, focusOffset });
+            if (this.correctDoubleClick) {
+                this.correctDoubleClick = false;
+                const { anchorNode, anchorOffset, focusNode } = this.activeSelection;
+                const anchorElement = closestElement(anchorNode);
+                // Allow editing the text of a link after "double click" on the last word of said link.
+                // This is done by correcting the selection focus inside of the link
+                if (
+                    anchorElement.tagName === "A" &&
+                    anchorNode !== focusNode &&
+                    focusNode.previousSibling === anchorElement
+                ) {
+                    const anchorElementLength = anchorElement.childNodes.length;
+
+                    // Due to the ZWS added around links we can always expect
+                    // the last childNode to be a ZWS in its own textNode.
+                    // therefore we can safely set the selection focus before last node.
+                    const newSelection = {
+                        anchorNode: anchorNode,
+                        anchorOffset: anchorOffset,
+                        focusNode: anchorElement,
+                        focusOffset: anchorElementLength - 1,
+                    };
+                    return this.setSelection(newSelection);
                 }
             }
 

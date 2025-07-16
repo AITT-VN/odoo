@@ -3,6 +3,7 @@
 
 from datetime import date, datetime, timedelta
 
+from odoo.fields import Command
 from odoo.tests import Form, TransactionCase
 from odoo.tools import mute_logger
 from odoo.exceptions import UserError
@@ -471,6 +472,76 @@ class TestProcRule(TransactionCase):
             {'location_id': replenish_loc.id, 'qty_to_order': 3},
         ])
 
+    def test_orderpoint_replenishment_view_3(self):
+        """
+        Create a selectable on product route and a product without routes. Verify that the orderpoint created
+        to replenish that product did not set the new route by default.
+        """
+        stock_location = self.env.ref('stock.stock_location_stock')
+        interdimensional_protal = self.env['stock.location'].create({
+            'name': 'Interdimensional portal',
+            'usage': 'internal',
+            'location_id': stock_location.location_id.id,
+        })
+        lovely_route = self.env['stock.route'].create({
+            'name': 'Lovely Route',
+            'product_selectable': True,
+            'product_categ_selectable': True,
+            'sequence': 1,
+            'rule_ids': [Command.create({
+                'name': 'Interdimensional portal -> Stock',
+                'action': 'pull',
+                'picking_type_id': self.ref('stock.picking_type_internal'),
+                'location_src_id': interdimensional_protal.id,
+                'location_dest_id': stock_location.id,
+            })],
+        })
+        lovely_category = self.env['product.category'].create({
+            'name': 'Lovely Category',
+            'route_ids': [Command.set(lovely_route.ids)]
+        })
+        products = self.env['product.product'].create([
+            {
+                'name': 'Lovely product',
+                'is_storable': True,
+                'route_ids': [Command.set([])],
+            },
+            {
+                'name': 'Lovely product with route',
+                'is_storable': True,
+                'route_ids': [Command.set(lovely_route.ids)],
+            },
+            {
+                'name': 'Lovely product with categ route',
+                'is_storable': True,
+                'route_ids': [Command.set([])],
+                'categ_id': lovely_category.id,
+            },
+        ])
+        moves = self.env['stock.move'].create([
+            {
+                'name': 'Create a demand move',
+                'location_id': stock_location.id,
+                'location_dest_id': self.partner.property_stock_customer.id,
+                'product_id': product.id,
+                'product_uom': product.uom_id.id,
+                'product_uom_qty': 1,
+            } for product in products
+        ])
+        moves._action_confirm()
+        # activate action of opening the replenishment view
+        self.env.flush_all()
+        self.env['stock.warehouse.orderpoint'].action_open_orderpoints()
+        replenishments = self.env['stock.warehouse.orderpoint'].search([
+            ('product_id', 'in', products.ids),
+        ])
+        # Verify that the route is unset
+        self.assertRecordValues(replenishments.sorted(lambda r: r.product_id.id), [
+            {'product_id': products[0].id, 'location_id': stock_location.id, 'route_id': False},
+            {'product_id': products[1].id, 'location_id': stock_location.id, 'route_id': lovely_route.id},
+            {'product_id': products[2].id, 'location_id': stock_location.id, 'route_id': lovely_route.id},
+        ])
+
     def test_orderpoint_compute_warehouse_location(self):
         warehouse_a = self.env['stock.warehouse'].search([], limit=1)
         warehouse_b = self.env['stock.warehouse'].create({
@@ -601,8 +672,15 @@ class TestProcRule(TransactionCase):
             mto_rule.rule_message,
             'The help message should correctly display information for MTSO.'
         )
-        
-        
+
+    def test_replenishment_creation(self):
+        """Test that the default replenishment order values
+        are computed correctly in the tree view."""
+        orderpoint_list_view = Form(self.env['stock.warehouse.orderpoint'], view='stock.view_warehouse_orderpoint_tree_editable')
+        self.assertEqual(orderpoint_list_view.qty_to_order, 0)
+        self.assertFalse(orderpoint_list_view.product_id)
+
+
 class TestProcRuleLoad(TransactionCase):
     def setUp(cls):
         super(TestProcRuleLoad, cls).setUp()
