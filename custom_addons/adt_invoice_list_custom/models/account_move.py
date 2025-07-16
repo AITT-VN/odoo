@@ -15,5 +15,5 @@ class AccountMove(models.Model):
 
     @api.depends("amount_total", "amount_residual")
     def _compute_amount_paid(self):
-        for record in self:
-            record.amount_paid = record.amount_total - record.amount_residual
+        for move in self:
+            move.amount_paid = move.amount_total - move.amount_residual
