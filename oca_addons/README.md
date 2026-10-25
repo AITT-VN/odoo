@@ -1,6 +1,6 @@
 # Module OCA (Odoo Community Association) dùng kèm bản Odoo 18 này
 
-Chép nguyên bản từ nhánh 18.0, không sửa. Cập nhật: chép lại thư mục module từ repo OCA và ghi commit mới ở bảng dưới.
+Chép nguyên bản từ nhánh 18.0, không sửa code. Thêm riêng bản dịch tiếng Việt `i18n/vi_VN.po` (và `vi.po` cho account_loan, date_range) theo thuật ngữ kế toán Việt Nam / Misa; khi chép lại module từ OCA nhớ giữ các file này. Cập nhật: chép lại thư mục module từ repo OCA và ghi commit mới ở bảng dưới.
 
 | Module | Repo OCA | Commit |
 |---|---|---|
