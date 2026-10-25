@@ -9,6 +9,7 @@ Chép nguyên bản từ nhánh 18.0, không sửa. Cập nhật: chép lại th
 | `report_xlsx` | [OCA/reporting-engine](https://github.com/OCA/reporting-engine/tree/18.0) | `e35a0fe` |
 | `mis_builder` | [OCA/mis-builder](https://github.com/OCA/mis-builder/tree/18.0) | `4f9eef0` |
 | `account_usability` | [OCA/account-financial-tools](https://github.com/OCA/account-financial-tools/tree/18.0) | `7442da0` |
+| `account_loan` | [OCA/account-financial-tools](https://github.com/OCA/account-financial-tools/tree/18.0) | `7442da0` |
 
-Phụ thuộc Python thêm: `openupgradelib` (mis_builder, account_usability). Addons path phải có thư mục này
+Phụ thuộc Python thêm: `openupgradelib` (mis_builder, account_usability), `numpy` và `numpy-financial` (account_loan). Addons path phải có thư mục này
 (`/opt/odoo18/oca_addons` trên server, `/opt/odoo-src/oca_addons` ở bản dev).
